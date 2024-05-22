@@ -1,10 +1,30 @@
 "use client";
 
+import {
+  DropdownMenu,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
+import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
-import { ChevronDown, ChevronRight, LucideIcon } from "lucide-react";
+import { useUser } from "@clerk/clerk-react";
+import { useMutation } from "convex/react";
+import {
+  ChevronDown,
+  ChevronRight,
+  LucideIcon,
+  MoreHorizontal,
+  Plus,
+  Trash,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
 import React from "react";
+import { toast } from "sonner";
 
 interface Props {
   label: string;
@@ -32,6 +52,50 @@ const Item = ({
   onExpand,
 }: Props) => {
   const ChevronIcon = expanded ? ChevronDown : ChevronRight;
+  const create = useMutation(api.documents.create);
+  const router = useRouter();
+  const { user } = useUser();
+  const archive = useMutation(api.documents.archive);
+
+  const handleExpand = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.stopPropagation();
+    onExpand?.();
+  };
+
+  const onCreate = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.stopPropagation();
+
+    if (!id) return;
+
+    const promise = create({ title: "Untitled", parentDocument: id }).then(
+      (documentId) => {
+        if (!expanded) {
+          onExpand?.();
+        }
+        // router.push(`/documents/${documentId}`);
+      }
+    );
+
+    toast.promise(promise, {
+      loading: "Creating a new note...",
+      success: "New note created!",
+      error: "Failed to create a new note.",
+    });
+  };
+
+  const onArchive = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.stopPropagation();
+
+    if (!id) return;
+
+    const promise = archive({ id });
+
+    toast.promise(promise, {
+      loading: "Moving to trash...",
+      success: "Note moved to trash!",
+      error: "Failed to archive note.",
+    });
+  };
 
   return (
     <div
@@ -47,7 +111,7 @@ const Item = ({
         <div
           role="button"
           className="h-full rounded-sm hover:bg-neutral-300 dark:bg-neutral-600 mr-1"
-          onClick={() => {}}
+          onClick={handleExpand}
         >
           <ChevronIcon className="h-4 w-4 shrink-0 text-muted-foreground/50" />
         </div>
@@ -63,22 +127,58 @@ const Item = ({
           <span className="text-xs">Ctrl K</span>
         </kbd>
       )}
+      {!!id && (
+        <div className="ml-auto flex items-center gap-x-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+              <div
+                role="button"
+                className="opacity-0 group-hover:opacity-100 h-full ml-auto rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600"
+              >
+                <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-60"
+              align="start"
+              side="right"
+              forceMount
+            >
+              <DropdownMenuItem onClick={onArchive}>
+                <Trash className="h-4 w-4 mr-2" />
+                Delete
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <div className="text-xs text-muted-foreground p-2">
+                Last edited by: {user?.fullName}
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <div
+            role="button"
+            onClick={onCreate}
+            className=" opacity-0 group-hover:opacity-100 h-full ml-auto rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600"
+          >
+            <Plus className="h-4 w-4 text-muted-foreground" />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default Item;
 
-Item.Skeleton = function ItemSekeleton({ level } : { level?: number }) {
+Item.Skeleton = function ItemSekeleton({ level }: { level?: number }) {
   return (
     <div
       style={{
-        paddingLeft: level ? `${(level * 12) + 25}px` : "12px"
+        paddingLeft: level ? `${level * 12 + 25}px` : "12px",
       }}
       className="flex gap-x-2 py-[3px]"
     >
       <Skeleton className="h-4 w-4" />
       <Skeleton className="h-4 w-[30px]" />
     </div>
-  )
-}
+  );
+};
