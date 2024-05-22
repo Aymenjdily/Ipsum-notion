@@ -4,9 +4,11 @@ import { cn } from "@/lib/utils";
 import {
   ChevronsLeft,
   MenuIcon,
+  Plus,
   PlusCircle,
   Search,
   Settings,
+  Trash,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import React, { ElementRef, useEffect, useRef } from "react";
@@ -17,6 +19,8 @@ import { api } from "@/convex/_generated/api";
 import Item from "./Item";
 import { toast } from "sonner";
 import DocumentsList from "./DocumentsList";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import TrashBox from "./TrashBox";
 
 const Navbar = () => {
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -148,6 +152,18 @@ const Navbar = () => {
         </div>
         <div className="mt-4">
           <DocumentsList />
+          <Item onClick={handleCreate} icon={Plus} label="New page" />
+          <Popover>
+            <PopoverTrigger className="w-full mt-4">
+              <Item
+                label="Trash"
+                icon={Trash}
+              />
+            </PopoverTrigger>
+            <PopoverContent side={isMobile ? "bottom" : "right"} className="p-0 w-72">
+              <TrashBox />
+            </PopoverContent>
+          </Popover>
         </div>
         <div
           onMouseDown={handleMouseDown}
