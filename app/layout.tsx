@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/contexts/ThemeProvider";
 import { ConvexProvider } from "@/contexts/ConvexProvider";
 import { Toaster } from 'sonner'
+import ModalProvider from "@/contexts/ModalProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -43,6 +44,7 @@ export default function RootLayout({
             storageKey="ipsum-theme"
           >
             <Toaster position="bottom-center" />
+            <ModalProvider />
             {children}
           </ThemeProvider>
         </ConvexProvider>
