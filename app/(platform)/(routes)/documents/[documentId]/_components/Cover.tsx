@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useCover } from "@/hooks/use-Cover";
+import { useEdgeStore } from "@/lib/edgestore";
 import { cn } from "@/lib/utils";
 import { useMutation } from "convex/react";
 import { ImageIcon, X } from "lucide-react";
@@ -19,13 +20,19 @@ interface Props {
 const Cover = ({ url, preview }: Props) => {
   const coverImage = useCover();
   const removeCover = useMutation(api.documents.removeCover);
-  const params = useParams()
+  const params = useParams();
+  const { edgestore } = useEdgeStore();
 
-  const handleRemove = () => {
+  const handleRemove = async () => {
+    if (url) {
+      await edgestore.publicFiles.delete({
+        url: url,
+      });
+    }
     removeCover({
-        id: params.documentId as Id<"documents">
-    })
-  }
+      id: params.documentId as Id<"documents">,
+    });
+  };
 
   return (
     <div
@@ -41,7 +48,7 @@ const Cover = ({ url, preview }: Props) => {
       {url && !preview && (
         <div className=" opacity-0 group-hover:opacity-100 absolute bottom-5 right-5 flex items-center gap-x-2">
           <Button
-            onClick={coverImage.onOpen}
+            onClick={() => coverImage.onReplace(url)}
             className="text-muted-foreground text-xs"
             variant={"outline"}
             size="sm"
