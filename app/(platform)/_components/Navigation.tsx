@@ -23,7 +23,7 @@ const Navigation = ({ isCollapsed, onResetWidth }: Props) => {
 
   if (document === undefined) {
     return (
-      <nav className="bg-background dark:bg-[#1F1F1F] px-3 py-2 flex items-center w-full gap-x-4">
+      <nav className="bg-background dark:bg-[#1F1F1F] px-3 py-2 flex items-center justify-between w-full gap-x-4">
         <TitleForm.Skeleton />
         <div className="flex items-center gap-x-2">
           <Menu.skeleton />

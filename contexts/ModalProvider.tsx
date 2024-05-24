@@ -2,6 +2,7 @@
 
 import React, { useEffect } from "react";
 import SettingsModal from "@/components/SettingsModal";
+import CoverModal from "@/components/CoverModal";
 
 const ModalProvider = () => {
   const [isMounted, setIsMounted] = React.useState(false);
@@ -17,6 +18,7 @@ const ModalProvider = () => {
   return (
     <>
       <SettingsModal />
+      <CoverModal />
     </>
   );
 };

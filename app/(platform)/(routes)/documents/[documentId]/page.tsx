@@ -1,15 +1,40 @@
-import { Button } from '@/components/ui/button'
-import React from 'react'
+"use client"
 
-const SingleDocumentPage = () => {
+import { api } from '@/convex/_generated/api'
+import { Id } from '@/convex/_generated/dataModel'
+import { useQuery } from 'convex/react'
+import React from 'react'
+import Toolbar from './_components/Toolbar'
+
+interface Props {
+  params: {
+    documentId: Id<"documents">
+  }
+}
+
+const SingleDocumentPage = ({ params }: Props) => {
+  const document = useQuery(api.documents.getById, {
+    documentId: params.documentId
+  })
+
+  if(document === undefined) {
+    return <div>
+      loading...
+    </div>
+  }
+
+  if(document === null) {
+    return <div>
+      Not found
+    </div>
+  }
+
   return (
-    <div className='h-full flex-col gap-y-5 flex items-center justify-center'>
-      <h1 className='text-2xl font-bold'>
-        Takal likay 2arak
-      </h1>
-      <Button>
-        Speak now
-      </Button>
+    <div className='pb-40'>
+      <div className='h-[35vh]' />
+      <div className='md:max-w-3xl lg:max-w-4xl mx-auto'>
+        <Toolbar initialData={document} />
+      </div>
     </div>
   )
 }
