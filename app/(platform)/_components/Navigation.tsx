@@ -9,6 +9,7 @@ import React from "react";
 import TitleForm from "./TitleForm";
 import Banner from "./Banner";
 import Menu from "./Menu";
+import Publish from "./Publish";
 
 interface Props {
   isCollapsed: boolean;
@@ -49,6 +50,7 @@ const Navigation = ({ isCollapsed, onResetWidth }: Props) => {
         <div className="flex items-center justify-between w-full">
           <TitleForm initialData={document} />
           <div className="flex items-center gap-x-2">
+            <Publish initialData={document} />
             <Menu documentId={document._id} />
           </div>
         </div>
