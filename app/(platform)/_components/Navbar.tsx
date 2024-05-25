@@ -10,7 +10,7 @@ import {
   Settings,
   Trash,
 } from "lucide-react";
-import { useParams, usePathname } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import React, { ElementRef, useEffect, useRef } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import UserItem from "./UserItem";
@@ -36,6 +36,7 @@ const Navbar = () => {
   const search = useSearch();
   const settings = useSettings();
   const params = useParams();
+  const router = useRouter();
 
   const isResizingRef = useRef(false);
   const sidebarRef = useRef<ElementRef<"aside">>(null);
@@ -122,7 +123,7 @@ const Navbar = () => {
   };
 
   const handleCreate = () => {
-    const promise = create({ title: "Untilted" });
+    const promise = create({ title: "Untilted" }).then((documentId) => router.push(`/documents/${documentId}`));
 
     toast.promise(promise, {
       loading: "Creating a new note...",
